@@ -14,7 +14,7 @@ const fetchAllCryptoPrices = async () => {
   return response.data.data;
 };
 
-const formatNumber = (num, isMobile) => {
+const formatNumber = (num: number, isMobile: boolean): string => {
   if (isMobile) {
     if (num >= 1e12) return (num / 1e12).toFixed(2) + "T";
     if (num >= 1e9) return (num / 1e9).toFixed(2) + "B";
@@ -68,7 +68,7 @@ export default function CryptoDashboard() {
     );
 
   const displayedData = search.length > 0 ? allData || [] : topData || [];
-  const filteredData = displayedData?.filter((crypto) =>
+  const filteredData = displayedData?.filter((crypto: { name: string; symbol: string }) =>
     crypto.name.toLowerCase().includes(search.toLowerCase()) ||
     crypto.symbol.toLowerCase().includes(search.toLowerCase())
   );
@@ -135,3 +135,4 @@ export default function CryptoDashboard() {
     </div>
   );
 }
+
