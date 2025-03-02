@@ -1,101 +1,137 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+
+const fetchTopCryptoPrices = async () => {
+  const response = await axios.get("https://api.coincap.io/v2/assets?limit=20");
+  return response.data.data;
+};
+
+const fetchAllCryptoPrices = async () => {
+  const response = await axios.get("https://api.coincap.io/v2/assets");
+  return response.data.data;
+};
+
+const formatNumber = (num, isMobile) => {
+  if (isMobile) {
+    if (num >= 1e12) return (num / 1e12).toFixed(2) + "T";
+    if (num >= 1e9) return (num / 1e9).toFixed(2) + "B";
+    if (num >= 1e6) return (num / 1e6).toFixed(2) + "M";
+  }
+  return num.toLocaleString();
+};
+
+export default function CryptoDashboard() {
+  const [search, setSearch] = useState("");
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("theme") === "dark";
+    }
+    return true;
+  });
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsMobile(window.innerWidth <= 768);
+      window.addEventListener("resize", () => setIsMobile(window.innerWidth <= 768));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("theme", darkMode ? "dark" : "light");
+    }
+  }, [darkMode]);
+
+  const { data: topData, isLoading, refetch } = useQuery({
+    queryKey: ["topCryptoPrices"],
+    queryFn: fetchTopCryptoPrices,
+    refetchOnWindowFocus: false,
+    refetchInterval: 30000,
+  });
+
+  const { data: allData } = useQuery({
+    queryKey: ["allCryptoPrices"],
+    queryFn: fetchAllCryptoPrices,
+    refetchOnWindowFocus: false,
+    enabled: search.length > 0,
+  });
+
+  if (isLoading)
+    return (
+      <div className="flex justify-center items-center h-screen bg-[#1C1C1E] text-white">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500"></div>
+      </div>
+    );
+
+  const displayedData = search.length > 0 ? allData || [] : topData || [];
+  const filteredData = displayedData?.filter((crypto) =>
+    crypto.name.toLowerCase().includes(search.toLowerCase()) ||
+    crypto.symbol.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+    <div className={
+      `${darkMode ? "bg-[#1C1C1E] text-white" : "bg-[#F8F9FA] text-black"} min-h-screen flex flex-col items-center p-6 transition-all relative`
+    }>
+      <div className="w-full max-w-4xl flex flex-col sm:flex-row justify-center items-center mb-6">
+        <h1 className={`text-3xl font-bold ${darkMode ? "text-blue-400" : "text-gray-800"}`}>Crypto Dashboard</h1>
+      </div>
+      <div className="flex w-full max-w-md gap-2 mb-4">
+        <input
+          type="text"
+          placeholder="Search..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className={`border p-3 rounded-lg flex-grow focus:outline-none focus:ring-2 ${darkMode ? "border-gray-700 bg-[#2C2C2E] text-white focus:ring-blue-500" : "border-gray-300 bg-white text-black focus:ring-blue-400"}`}
         />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          onClick={refetch}
+          className={`px-5 py-2 rounded-lg transition shadow-md flex items-center justify-center ${darkMode ? "bg-blue-500 hover:bg-blue-600 text-white" : "bg-gray-700 hover:bg-gray-800 text-white"}`}
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <span className={darkMode ? "text-white" : "text-gray-300"}>🔄</span>
+        </button>
+      </div>
+      <div className="w-full max-w-4xl overflow-x-auto rounded-lg shadow-lg">
+        {filteredData?.length === 0 ? (
+          <p className="text-center text-gray-400">No results found.</p>
+        ) : (
+          <table className={`w-full border-collapse border rounded-lg overflow-hidden text-sm ${darkMode ? "border-gray-700 text-white" : "border-gray-300 text-black"}`}>
+            <thead className={darkMode ? "bg-[#2C2C2E] text-white" : "bg-gray-100 text-black"}>
+              <tr className="text-left">
+                <th className="p-3">#</th>
+                <th className="p-3">Name</th>
+                <th className="p-3">Price</th>
+                <th className="p-3">24h Volume</th>
+                <th className="p-3">Market Cap</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredData?.map((crypto, index) => (
+                <tr key={crypto.id} className={darkMode ? "bg-[#2C2C2E] border-b border-gray-700 hover:bg-[#3A3A3C]" : "bg-white border-b border-gray-300 hover:bg-gray-200"}>
+                  <td className="p-3 text-center">{index + 1}</td>
+                  <td className="p-3 font-semibold flex items-center gap-2">
+                    <span className={darkMode ? "text-white font-bold" : "text-gray-900 font-bold"}>{crypto.name}</span>
+                    <span className={darkMode ? "text-gray-400 text-xs" : "text-gray-600 text-xs"}>{crypto.symbol.toUpperCase()}</span>
+                  </td>
+                  <td className={`p-3 ${darkMode ? "text-green-400" : "text-green-700"}`}>${parseFloat(crypto.priceUsd).toFixed(2)}</td>
+                  <td className={`p-3 ${darkMode ? "text-gray-300" : "text-gray-600"}`}>{formatNumber(parseFloat(crypto.volumeUsd24Hr), isMobile)}</td>
+                  <td className={`p-3 ${darkMode ? "text-gray-300" : "text-gray-600"}`}>{formatNumber(parseFloat(crypto.marketCapUsd), isMobile)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+      <button
+        onClick={() => setDarkMode(!darkMode)}
+        className="fixed bottom-6 right-6 px-4 py-2 rounded-lg transition shadow-md border border-gray-700 bg-gray-800 text-white hover:bg-gray-900"
+      >
+        {darkMode ? "☀️" : "🌙"}
+      </button>
     </div>
   );
 }
