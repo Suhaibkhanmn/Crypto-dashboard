@@ -1,36 +1,115 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Crypto Price Tracker
 
-## Getting Started
+## Overview
 
-First, run the development server:
+This is a **Next.js** based web application that fetches and displays **live cryptocurrency prices**. It also includes **Docusaurus documentation** for developers.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Features
+
+- Live cryptocurrency price tracking using **CoinCap API**
+- Search functionality to filter cryptocurrencies
+- Dark mode support
+- Manual refresh button to update prices
+- Responsive design for web and mobile
+- **Docusaurus** documentation for setup, API integration, and state management
+
+---
+
+## Installation & Setup
+
+### 1️⃣ Clone the Repository
+
+```sh
+git clone https://github.com/your-repo.git
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2️⃣ Install Dependencies
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+#### For Next.js App:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```sh
+cd web-app
+npm install
+```
 
-## Learn More
+#### For Docusaurus Docs:
 
-To learn more about Next.js, take a look at the following resources:
+```sh
+cd docs
+npm install
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 3️⃣ Run the Application
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+#### Start Next.js App:
 
-## Deploy on Vercel
+```sh
+npm run dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+#### Start Docusaurus Documentation:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```sh
+cd docs
+npm run start
+```
+
+Now visit:
+
+- **Next.js App** → `http://localhost:3000/`
+- **Docusaurus Docs** → `http://localhost:3000/docs`
+
+---
+
+## Tech Stack
+
+- **Frontend**: Next.js, React, Tailwind CSS
+- **State Management**: React Query
+- **API**: CoinCap API
+- **Documentation**: Docusaurus
+- **Deployment**: Vercel
+
+---
+
+## Live Demo
+
+- **Crypto Price Tracker**: [Live App](https://your-vercel-deployment-link.vercel.app/)
+- **Documentation**: [Docs](https://your-docs-deployment-link.vercel.app/)
+
+---
+
+## Project Documentation
+
+For full documentation, visit the **Docusaurus docs**:
+
+- [Setup Guide](https://your-docs-deployment-link.vercel.app/docs/setup)
+- [API Integration](https://your-docs-deployment-link.vercel.app/docs/api)
+- [State Management](https://your-docs-deployment-link.vercel.app/docs/state-management)
+- [Challenges & Solutions](https://your-docs-deployment-link.vercel.app/docs/challenges)
+
+---
+
+## Troubleshooting
+
+If you run into issues, check:
+
+1. **API not loading?** CoinCap API might be down, check their status.
+2. **Vercel deployment failed?** Run `npm run build` locally to catch errors.
+3. **Docusaurus 404?** Ensure `intro.md` exists and `sidebars.js` is configured correctly.
+
+---
+
+## Contributing
+
+Feel free to fork this project and submit a PR with improvements!
+
+1. Fork the repo
+2. Create a new branch (`git checkout -b feature-name`)
+3. Commit changes (`git commit -m "Added new feature"`)
+4. Push to GitHub and create a PR
+
+---
+
+## License
+
+This project is **MIT licensed**. Feel free to use and modify it as needed!
